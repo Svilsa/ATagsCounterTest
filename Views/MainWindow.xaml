@@ -3,10 +3,65 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ATagsCounter"
+        xmlns:viewModels="clr-namespace:ATagsCounter.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
 
+        Title="ATags Counter"
+        Height="550"
+        Width="800"
+        ResizeMode="CanMinimize">
+    
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Window.DataContext>
+    
+    <Grid ShowGridLines="true">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="350" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Url File Path:"
+                   FontSize="15"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center" />
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 FontSize="15"
+                 VerticalContentAlignment="Center"
+                 Height="35"
+                 Margin="10,0,10,0"
+                 Text="{Binding UrlFilePath}" />
+
+        <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                  AutoGenerateColumns="False"
+                  CanUserReorderColumns="False" CanUserResizeColumns="False"
+                  CanUserSortColumns="True" CanUserResizeRows="False"
+                  SelectionMode="Extended"
+                  ItemsSource="{Binding UrlItems}"
+                  SelectionUnit="FullRow"
+                  HorizontalContentAlignment="Center"
+                  VerticalContentAlignment="Center"
+                  GridLinesVisibility="None"
+                  BorderThickness="0"
+                  Margin="120,0,120,0"
+                  RowHeight="35">
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Url" Width="350" Binding="{Binding}" />
+                <DataGridTextColumn Header="A Tags Count" Width="150" Binding="{Binding}" />
+                <DataGridTextColumn Header="Status" Width="*" Binding="{Binding}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                Margin="300, 15, 300, 15"
+                Content="{Binding StartAndPauseButtonContent}"
+                Command="{Binding StartAndPauseCommand}" />
     </Grid>
 </Window>
