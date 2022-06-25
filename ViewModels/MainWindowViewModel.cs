@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ATagsCounter.Core;
 using ATagsCounter.Infrastructure;
 using ATagsCounter.Models;
 
@@ -12,17 +13,18 @@ namespace ATagsCounter.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private DelegateCommand _startAndPauseCommand;
+        private bool _isProcessed;
         private string _startAndPauseButtonContent = "Start";
-        
+
+        private readonly ATagsCounterService _counterService = new ();
         private CancellationTokenSource _cancellationTokenSource = new();
+
         private IEnumerable<UrlItem>? _urlItems;
-        private string? _urlFilePath;
+        private string _urlFilePath = "./UrlsSample.txt";
 
         public MainWindowViewModel()
         {
-            _startAndPauseCommand = new DelegateCommand(Start);
-
+            StartAndPauseCommand = new DelegateCommand(StartOrCancelIfStared);
         }
 
         public IEnumerable<UrlItem>? UrlItems
@@ -36,7 +38,7 @@ namespace ATagsCounter.ViewModels
             }
         }
 
-        public string? UrlFilePath
+        public string UrlFilePath
         {
             get => _urlFilePath;
             set
@@ -56,22 +58,47 @@ namespace ATagsCounter.ViewModels
                 OnPropertyChanged();
             }
         }
-        
-        public DelegateCommand StartAndPauseCommand
+
+        public DelegateCommand StartAndPauseCommand { get; set; }
+
+        private async void StartOrCancelIfStared()
         {
-            get => _startAndPauseCommand;
-            set
+            try
             {
-                _startAndPauseCommand = value;
-                OnPropertyChanged();
+                switch (_isProcessed)
+                {
+                    case false:
+                    {
+                        _isProcessed = true;
+                        StartAndPauseButtonContent = "Cancel";
+
+                        UrlItems = await Task.Run(() => FileParser.ParseUriFromTxt(UrlFilePath));
+                        await _counterService.CountATagsAsync(UrlItems, _cancellationTokenSource.Token);
+
+                        break;
+                    }
+                    case true:
+                    {
+                        _cancellationTokenSource.Cancel();
+                        _cancellationTokenSource = new CancellationTokenSource();
+                        
+                        break;
+                    }
+                }
+
+                StartAndPauseButtonContent = "Start";
+                _isProcessed = false;
+            }
+            catch (OperationCanceledException)
+            {
+                UrlItems = null;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
         }
 
-        private async void Start()
-        {
-            
-        }
-        
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler? PropertyChanged;

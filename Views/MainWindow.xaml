@@ -4,18 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:ATagsCounter.ViewModels"
+        xmlns:infrastructure="clr-namespace:ATagsCounter.Infrastructure"
         mc:Ignorable="d"
 
         Title="ATags Counter"
         Height="550"
         Width="800"
         ResizeMode="CanMinimize">
-    
+
     <Window.DataContext>
         <viewModels:MainWindowViewModel />
     </Window.DataContext>
-    
-    <Grid ShowGridLines="true">
+
+    <Window.Resources>
+        <infrastructure:LoadingStatusToIconConverter x:Key="StatusToIconConverter" />
+    </Window.Resources>
+
+    <Grid ShowGridLines="False">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="80" />
@@ -40,6 +45,7 @@
 
         <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                   AutoGenerateColumns="False"
+                  IsReadOnly="True"
                   CanUserReorderColumns="False" CanUserResizeColumns="False"
                   CanUserSortColumns="True" CanUserResizeRows="False"
                   SelectionMode="Extended"
@@ -50,15 +56,25 @@
                   GridLinesVisibility="None"
                   BorderThickness="0"
                   Margin="120,0,120,0"
-                  RowHeight="35">
-            
+                  RowHeight="20">
+
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Url" Width="350" Binding="{Binding}" />
-                <DataGridTextColumn Header="A Tags Count" Width="150" Binding="{Binding}" />
-                <DataGridTextColumn Header="Status" Width="*" Binding="{Binding}" />
+                <DataGridTextColumn Header="Url" Width="380" Binding="{Binding Uri}" />
+                <DataGridTextColumn Header="A Tags Count" Width="90" Binding="{Binding ATagsCount}" />
+                
+                <DataGridTemplateColumn Header="Status" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                            <Path
+                                Data="{Binding LoadingStatus, Converter={StaticResource StatusToIconConverter}}"
+                                Fill="Black" Stretch="Uniform" HorizontalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        
+
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                 Margin="300, 15, 300, 15"
                 Content="{Binding StartAndPauseButtonContent}"
