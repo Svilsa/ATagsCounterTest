@@ -1,4 +1,4 @@
 /.idea
 
-/bin/
-/obj/
+src/ATagsCounter/bin/
+src/ATagsCounter/obj/

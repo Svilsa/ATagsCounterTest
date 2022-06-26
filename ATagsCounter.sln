@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATagsCounter", "ATagsCounter.csproj", "{00798B9D-3A48-4984-8DD9-0FCCDA2757AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATagsCounter", "src\ATagsCounter\ATagsCounter.csproj", "{00798B9D-3A48-4984-8DD9-0FCCDA2757AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
