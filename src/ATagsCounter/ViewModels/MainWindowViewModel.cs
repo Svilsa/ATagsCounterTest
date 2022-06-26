@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,15 +17,27 @@ namespace ATagsCounter.ViewModels
         private bool _isProcessed;
         private string _startAndPauseButtonContent = "Start";
 
-        private readonly ATagsCounterService _counterService = new ();
+        private readonly ATagsCounterService _counterService = new();
         private CancellationTokenSource _cancellationTokenSource = new();
 
         private IEnumerable<UrlItem>? _urlItems;
         private string _urlFilePath = "./UrlsSample.txt";
+        private UrlItem? _maxItem;
 
         public MainWindowViewModel()
         {
             StartAndPauseCommand = new DelegateCommand(StartOrCancelIfStared);
+        }
+
+        public UrlItem? MaxItem
+        {
+            get => _maxItem;
+            set
+            {
+                if (Equals(value, _maxItem)) return;
+                _maxItem = value;
+                OnPropertyChanged();
+            }
         }
 
         public IEnumerable<UrlItem>? UrlItems
@@ -74,6 +87,7 @@ namespace ATagsCounter.ViewModels
 
                         UrlItems = await Task.Run(() => FileParser.ParseUriFromTxt(UrlFilePath));
                         await _counterService.CountATagsAsync(UrlItems, _cancellationTokenSource.Token);
+                        MaxItem = UrlItems.OrderByDescending(url => url.ATagsCount).First();
 
                         break;
                     }
@@ -81,7 +95,7 @@ namespace ATagsCounter.ViewModels
                     {
                         _cancellationTokenSource.Cancel();
                         _cancellationTokenSource = new CancellationTokenSource();
-                        
+
                         break;
                     }
                 }
@@ -92,6 +106,7 @@ namespace ATagsCounter.ViewModels
             catch (OperationCanceledException)
             {
                 UrlItems = null;
+                MaxItem = null;
             }
             catch (Exception e)
             {

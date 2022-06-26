@@ -18,3 +18,13 @@ https://www.nvidia.com/
 https://www.visa.com
 https://corporate.exxonmobil.com/
 https://www.coca-cola.com/
+https://www.cisco.com/
+https://www.pepsico.com/
+https://www.broadcom.com/
+https://corporate.mcdonalds.com/
+https://www.qualcomm.com/
+https://www.pmi.com/
+https://www.oracle.com/
+https://www.starbucks.com/
+https://www.morganstanley.com/
+https://about.americanexpress.com/

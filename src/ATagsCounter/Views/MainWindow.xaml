@@ -18,6 +18,7 @@
 
     <Window.Resources>
         <infrastructure:LoadingStatusToIconConverter x:Key="StatusToIconConverter" />
+        <infrastructure:RowFontWeightConverter x:Key="HighlightMaxValueConverter" />
     </Window.Resources>
 
     <Grid ShowGridLines="False">
@@ -44,6 +45,7 @@
                  Text="{Binding UrlFilePath}" />
 
         <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                  EnableRowVirtualization="False"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   CanUserReorderColumns="False" CanUserResizeColumns="False"
@@ -58,16 +60,31 @@
                   Margin="120,0,120,0"
                   RowHeight="20">
 
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="FontWeight">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource HighlightMaxValueConverter}">
+                                <Binding />
+                                <Binding RelativeSource="{RelativeSource AncestorType=DataGrid}"
+                                         Path="DataContext.MaxItem" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.RowStyle>
+
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Url" Width="380" Binding="{Binding Uri}" />
                 <DataGridTextColumn Header="A Tags Count" Width="90" Binding="{Binding ATagsCount}" />
-                
+
                 <DataGridTemplateColumn Header="Status" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                             <Path
-                                Data="{Binding LoadingStatus, Converter={StaticResource StatusToIconConverter}}"
+                                Data="{Binding LoadingStatus, Mode=OneWay, 
+                                Converter={StaticResource StatusToIconConverter}}"
                                 Fill="Black" Stretch="Uniform" HorizontalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
